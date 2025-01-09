@@ -2,6 +2,7 @@ use ggez::{
     conf, event,
     graphics::{self, DrawParam, Image},
     Context, GameResult,
+    input::keyboard::KeyCode,
 };
 use glam::Vec2;
 use hecs::{Entity, World};
@@ -81,11 +82,11 @@ pub fn load_map(world: &mut World, map_string: String) {
 // ANCHOR_END: init
 
 
-
-pub fn run_rendering(world: &World, context: &mut Context) {
-    // Clearing the screen (this gives us the background colour)
+// ANCHOR: rendering_system
+fn run_rendering(world: &World, context: &mut Context) {
+    // Create a canvas to draw on
     let mut canvas =
-    graphics::Canvas::from_frame(context, graphics::Color::from([0.95, 0.95, 0.95, 1.0]));
+        graphics::Canvas::from_frame(context, graphics::Color::from([0.95, 0.95, 0.95, 1.0]));
 
     // Get all the renderables with their positions and sort by the position z
     // This will allow us to have entities layered visually.
@@ -110,7 +111,65 @@ pub fn run_rendering(world: &World, context: &mut Context) {
     // on the screen.
     canvas.finish(context).expect("expected to present");
 }
+// ANCHOR_END: rendering_system
 
+
+// ANCHOR: input_system_print
+#[allow(dead_code)]
+fn run_input_print(_world: &World, context: &mut Context) {
+    if context.keyboard.is_key_pressed(KeyCode::Up) {
+        println!("UP");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Down) {
+        println!("DOWN");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Left) {
+        println!("LEFT");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Right) {
+        println!("RIGHT");
+    }
+}
+// ANCHOR_END: input_system_print
+
+// ANCHOR: input_system_duplicate
+#[allow(dead_code)]
+fn input_system_duplicate(world: &World, context: &mut Context) {
+    for (_, (position, _player)) in world.query::<(&mut Position, &Player)>().iter() {
+        if context.keyboard.is_key_pressed(KeyCode::Up) {
+            position.y -= 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Down) {
+            position.y += 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Left) {
+            position.x -= 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Right) {
+            position.x += 1;
+        }
+    }
+}
+// ANCHOR_END: input_system_duplicate
+
+// ANCHOR: input_system
+fn run_input(world: &World, context: &mut Context) {
+    for (_, (position, _player)) in world.query::<(&mut Position, &Player)>().iter() {
+        if context.keyboard.is_key_just_pressed(KeyCode::Up) {
+            position.y -= 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Down) {
+            position.y += 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Left) {
+            position.x -= 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Right) {
+            position.x += 1;
+        }
+    }
+}
+// ANCHOR_END: input_system
 
 
 // ANCHOR: game
@@ -130,8 +189,11 @@ struct Game {
 // - updating
 // - rendering
 impl event::EventHandler<ggez::GameError> for Game {
-    fn update(&mut self, _context: &mut Context) -> GameResult {
+    fn update(&mut self, context: &mut Context) -> GameResult {
         // TODO: update game logic here
+        {
+            run_input(&self.world, context);
+        }
         Ok(())
     }
 
