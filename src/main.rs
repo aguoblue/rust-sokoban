@@ -29,15 +29,20 @@ struct Game {
 // - rendering
 impl event::EventHandler<ggez::GameError> for Game {
     fn update(&mut self, context: &mut Context) -> GameResult {
-        // TODO: update game logic here
+        // Run input system
         {
             systems::input::run_input(&self.world, context);
         }
+        
+        // Run gameplay state
+        {
+            systems::gameplay::run_gameplay_state(&self.world);
+        }
+
         Ok(())
     }
 
     fn draw(&mut self, context: &mut Context) -> GameResult {
-        // TODO: update draw here
         // Render game entities
         {
             systems::rendering::run_rendering(&self.world, context);
@@ -51,6 +56,7 @@ impl event::EventHandler<ggez::GameError> for Game {
 pub fn main() -> GameResult {
     let mut  world = World::new();
     map::initialize_level(&mut world);
+    entities::create_gameplay(&mut world);
 
     // Create a game context and event loop
     let context_builder = ggez::ContextBuilder::new("rust_sokoban", "sokoban")

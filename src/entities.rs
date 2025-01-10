@@ -58,4 +58,9 @@ pub fn create_player(world: &mut World, position: Position) -> Entity {
         Movable{},
     ))
 }
+
+//游戏实体
+pub fn create_gameplay(world: &mut World) -> Entity {
+    world.spawn((Gameplay::default(),))
+}
 // ANCHOR_END: entities

@@ -142,6 +142,13 @@ pub fn run_input(world: &World, context: &mut Context) {
         }
     }
 
+    // Update gameplay moves
+    if !to_move.is_empty() {
+        let mut query = world.query::<&mut Gameplay>();
+        let gameplay = query.iter().next().unwrap().1;
+        gameplay.moves_count += 1;
+    }
+
     // Now actually move what needs to be moved
     for (entity, key) in to_move {
         let mut position = world.get::<&mut Position>(entity).unwrap();
