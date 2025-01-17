@@ -1,3 +1,5 @@
+use std::fmt::format;
+
 use hecs::{Entity, World};
 use crate::components::*;
 
@@ -25,25 +27,25 @@ pub fn create_floor(world: &mut World, position: Position) -> Entity {
 }
 
 //箱子实体
-pub fn create_box(world: &mut World, position: Position) -> Entity {
+pub fn create_box(world: &mut World, position: Position, colour: BoxColour) -> Entity {
     world.spawn((
         Position { z: 10, ..position },
         Renderable {
-            path: "/images/box.png".to_string(),
+            path: format!("/images/box_{}.png", colour),
         },
-        Box {},
+        Box {colour},
         Movable{},
     ))
 }
 
 //方框斑点组件
-pub fn create_box_spot(world: &mut World, position: Position) -> Entity {
+pub fn create_box_spot(world: &mut World, position: Position, colour: BoxColour) -> Entity {
     world.spawn((
         Position { z: 9, ..position },
         Renderable {
-            path: "/images/box_spot.png".to_string(),
+            path: format!("/images/box_spot_{}.png", colour),
         },
-        BoxSpot {},
+        BoxSpot {colour},
     ))
 }
 

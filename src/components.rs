@@ -17,9 +17,13 @@ pub struct Wall {}
 
 pub struct Player {}
 
-pub struct Box {}
+pub struct Box {
+    pub colour: BoxColour,
+}
 
-pub struct BoxSpot {}
+pub struct BoxSpot {
+    pub colour: BoxColour,
+}
 
 pub struct Movable;
 
@@ -57,3 +61,27 @@ impl Display for GameplayState {
     }
 }
 // ANCHOR_END: gameplay_state_impl_display
+
+
+
+// ANCHOR: box_colour_eq
+#[derive(PartialEq)]
+// ANCHOR: box_colour
+pub enum BoxColour {
+    Red,
+    Blue,
+}
+// ANCHOR_END: box_colour
+// ANCHOR_END: box_colour_eq
+
+// ANCHOR: box_colour_display
+impl Display for BoxColour {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str(match self {
+            BoxColour::Red => "red",
+            BoxColour::Blue => "blue",
+        })?;
+        Ok(())
+    }
+}
+// ANCHOR_END: box_colour_display
