@@ -9,7 +9,7 @@ mod constants;
 mod map;
 mod entities;
 mod systems;
-
+mod events;
 
 // ANCHOR: game
 // This struct will hold all our game state
@@ -39,6 +39,11 @@ impl event::EventHandler<ggez::GameError> for Game {
             systems::gameplay::run_gameplay_state(&self.world);
         }
 
+        // Run events processing
+        {
+            systems::events::run_process_events(&mut self.world);
+        }
+
         Ok(())
     }
 
@@ -57,6 +62,7 @@ pub fn main() -> GameResult {
     let mut  world = World::new();
     map::initialize_level(&mut world);
     entities::create_gameplay(&mut world);
+    entities::create_event_queue(&mut world);
 
     // Create a game context and event loop
     let context_builder = ggez::ContextBuilder::new("rust_sokoban", "sokoban")

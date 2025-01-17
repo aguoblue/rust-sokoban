@@ -1,5 +1,6 @@
 use std::fmt;
 use std::fmt::Display;
+use crate::events::Event;
 
 // ANCHOR: components
 #[derive(Clone, Copy)]
@@ -85,3 +86,11 @@ impl Display for BoxColour {
     }
 }
 // ANCHOR_END: box_colour_display
+
+
+// ANCHOR: events
+#[derive(Default)]
+pub struct EventQueue {
+    pub events: Vec<Event>,
+}
+// ANCHOR_END: events

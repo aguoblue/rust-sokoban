@@ -5,6 +5,7 @@ use crate::components::*;
 use ggez::{input::keyboard::KeyCode, Context};
 use std::collections::HashMap;
 use crate::constants::*;
+use crate::events::*;
 
 // ANCHOR: input_system_print
 #[allow(dead_code)]
@@ -67,6 +68,9 @@ fn input_system_once(world: &World, context: &mut Context) {
 // ANCHOR: input_system
 pub fn run_input(world: &World, context: &mut Context) {
     let mut to_move: Vec<(Entity, KeyCode)> = Vec::new();
+
+    let mut events = Vec::new();
+
 
     // get all the movables and immovables
     let mov: HashMap<(u8, u8), Entity> = world
@@ -134,7 +138,11 @@ pub fn run_input(world: &World, context: &mut Context) {
                     // if it exists, we need to stop and not move anything
                     // if it doesn't exist, we stop because we found a gap
                     match immov.get(&pos) {
-                        Some(_id) => to_move.clear(),
+                        Some(_id) => {
+                            to_move.clear();
+                            events.push(Event::PlayerHitObstacle{});
+                            break;
+                        }
                         None => break,
                     }
                 }
@@ -160,6 +168,19 @@ pub fn run_input(world: &World, context: &mut Context) {
             KeyCode::Right => position.x += 1,
             _ => (),
         }
+
+        // Fire an event for the entity that just moved
+        events.push(Event::EntityMoved(EntityMoved { entity }));
     }
+
+
+     // ANCHOR: event_add
+    // Finally add events back into the world
+    {
+        let mut query = world.query::<&mut EventQueue>();
+        let event_queue = query.iter().next().unwrap().1;
+        event_queue.events.append(&mut events);
+    }
+    // ANCHOR_END: event_add
 }
 // ANCHOR_END: input_system

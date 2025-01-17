@@ -66,3 +66,8 @@ pub fn create_gameplay(world: &mut World) -> Entity {
     world.spawn((Gameplay::default(),))
 }
 // ANCHOR_END: entities
+
+
+pub fn create_event_queue(world: &mut World) -> Entity {
+    world.spawn((EventQueue::default(),))
+}
