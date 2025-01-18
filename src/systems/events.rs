@@ -1,10 +1,10 @@
 use crate::components::*;
 use crate::events::*;
 use hecs::World;
-
+use ggez::Context;
 use std::collections::HashMap;
 
-pub fn run_process_events(world: &mut World) {
+pub fn run_process_events(world: &mut World, context: &mut Context) {
     let events = {
         let mut query = world.query::<&mut crate::components::EventQueue>();
         let events = query
@@ -27,12 +27,17 @@ pub fn run_process_events(world: &mut World) {
         .map(|(_, t)| ((t.0.x, t.0.y), t.1))
         .collect::<HashMap<_, _>>();
 
+    let mut query = world.query::<&mut AudioStore>();
+    let audio_store = query.iter().next().unwrap().1;
+    
+
     for event in events {
         println!("New event: {:?}", event);
 
         match event {
             Event::PlayerHitObstacle => {
                 // play sound here
+                audio_store.play_sound(context, "wall");
             }
             Event::EntityMoved(EntityMoved { entity }) => {
                 // An entity was just moved, check if it was a box and fire
@@ -51,8 +56,15 @@ pub fn run_process_events(world: &mut World) {
                     }
                 }
             }
-            Event::BoxPlacedOnSpot(BoxPlacedOnSpot { is_correct_spot: _ }) => {
+            Event::BoxPlacedOnSpot(BoxPlacedOnSpot { is_correct_spot}) => {
                 // play sound here
+                let sound = if is_correct_spot {
+                    "correct"
+                } else {
+                    "incorrect"
+                };
+
+                audio_store.play_sound(context, sound);
             }
         }
     }

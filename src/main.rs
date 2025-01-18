@@ -41,7 +41,7 @@ impl event::EventHandler<ggez::GameError> for Game {
 
         // Run events processing
         {
-            systems::events::run_process_events(&mut self.world);
+            systems::events::run_process_events(&mut self.world, &mut *context);
         }
 
         Ok(())
@@ -60,17 +60,21 @@ impl event::EventHandler<ggez::GameError> for Game {
 // ANCHOR: main
 pub fn main() -> GameResult {
     let mut  world = World::new();
-    map::initialize_level(&mut world);
-    entities::create_gameplay(&mut world);
-    entities::create_event_queue(&mut world);
-
     // Create a game context and event loop
     let context_builder = ggez::ContextBuilder::new("rust_sokoban", "sokoban")
-        .window_setup(conf::WindowSetup::default().title("Rust Sokoban!"))
-        .window_mode(conf::WindowMode::default().dimensions(800.0, 600.0))
-        .add_resource_path(path::PathBuf::from("./resources"));
+    .window_setup(conf::WindowSetup::default().title("Rust Sokoban!"))
+    .window_mode(conf::WindowMode::default().dimensions(800.0, 600.0))
+    .add_resource_path(path::PathBuf::from("./resources"));
 
-    let (context, event_loop) = context_builder.build()?;
+    let (mut context, event_loop) = context_builder.build()?;
+
+    entities::create_gameplay(&mut world);
+    entities::create_event_queue(&mut world);
+    entities::create_audio_store(&mut world);
+    map::initialize_level(&mut world, &mut context);
+
+
+  
 
     // Create the game state
     let game = Game { world };
