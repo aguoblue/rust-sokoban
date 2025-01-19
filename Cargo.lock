@@ -2016,6 +2016,7 @@ dependencies = [
  "ggez",
  "glam",
  "hecs",
+ "itertools",
 ]
 
 [[package]]

@@ -7,3 +7,4 @@ edition = "2021"
 ggez = "0.9.3"
 hecs = "0.10.5"
 glam = { version = "0.24.0", features = ["mint"] }
+itertools = "0.13.0"
