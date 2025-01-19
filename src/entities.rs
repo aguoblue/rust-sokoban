@@ -8,11 +8,9 @@ use crate::components::*;
 pub fn create_wall(world: &mut World, position: Position) -> Entity {
     world.spawn((
         Position { z: 10, ..position },
-        Renderable {
-            path: "/images/wall.png".to_string(),
-        },
+        Renderable::new_static("/images/wall.png"),
         Wall {},
-        Immovable{},
+        Immovable {},
     ))
 }
 
@@ -20,9 +18,7 @@ pub fn create_wall(world: &mut World, position: Position) -> Entity {
 pub fn create_floor(world: &mut World, position: Position) -> Entity {
     world.spawn((
         Position { z: 5, ..position },
-        Renderable {
-            path: "/images/floor.png".to_string(),
-        },
+        Renderable::new_static("/images/floor.png"),
     ))
 }
 
@@ -30,11 +26,12 @@ pub fn create_floor(world: &mut World, position: Position) -> Entity {
 pub fn create_box(world: &mut World, position: Position, colour: BoxColour) -> Entity {
     world.spawn((
         Position { z: 10, ..position },
-        Renderable {
-            path: format!("/images/box_{}.png", colour),
-        },
-        Box {colour},
-        Movable{},
+        Renderable::new_animated(vec![
+            &format!("/images/box_{}_1.png", colour),
+            &format!("/images/box_{}_2.png", colour),
+        ]),
+        Box { colour },
+        Movable {},
     ))
 }
 
@@ -42,10 +39,8 @@ pub fn create_box(world: &mut World, position: Position, colour: BoxColour) -> E
 pub fn create_box_spot(world: &mut World, position: Position, colour: BoxColour) -> Entity {
     world.spawn((
         Position { z: 9, ..position },
-        Renderable {
-            path: format!("/images/box_spot_{}.png", colour),
-        },
-        BoxSpot {colour},
+        Renderable::new_static(&format!("/images/box_spot_{}.png", colour)),
+        BoxSpot { colour },
     ))
 }
 
@@ -53,11 +48,13 @@ pub fn create_box_spot(world: &mut World, position: Position, colour: BoxColour)
 pub fn create_player(world: &mut World, position: Position) -> Entity {
     world.spawn((
         Position { z: 10, ..position },
-        Renderable {
-            path: "/images/player.png".to_string(),
-        },
+        Renderable::new_animated(vec![
+            "/images/player_1.png",
+            "/images/player_2.png",
+            "/images/player_3.png",
+        ]),
         Player {},
-        Movable{},
+        Movable {},
     ))
 }
 
@@ -77,3 +74,9 @@ pub fn create_event_queue(world: &mut World) -> Entity {
 pub fn create_audio_store(world: &mut World) -> Entity {
     world.spawn((AudioStore::default(),))
 }
+
+// ANCHOR: create_time
+pub fn create_time(world: &mut World) -> Entity {
+    world.spawn((Time::default(),))
+}
+// ANCHOR_END: create_time

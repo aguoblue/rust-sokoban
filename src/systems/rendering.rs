@@ -7,6 +7,8 @@ use glam::Vec2;
 use crate::constants::*;
 use crate::components::*;
 
+use std::time::Duration;
+
 
 
 // ANCHOR: rendering_system
@@ -14,6 +16,10 @@ pub fn run_rendering(world: &World, context: &mut Context) {
     // Create a canvas to draw on
     let mut canvas =
         graphics::Canvas::from_frame(context, graphics::Color::from([0.95, 0.95, 0.95, 1.0]));
+    
+    // Get time
+    let mut query = world.query::<&Time>();
+    let time = query.iter().next().unwrap().1;
 
     // Get all the renderables with their positions and sort by the position z
     // This will allow us to have entities layered visually.
@@ -25,7 +31,7 @@ pub fn run_rendering(world: &World, context: &mut Context) {
     // and draw it at the specified position.
     for (_, (position, renderable)) in rendering_data.iter() {
         // Load the image
-        let image = Image::from_path(context, renderable.path.clone()).unwrap();
+        let image = get_image(context, renderable, time.delta);
         let x = position.x as f32 * TILE_WIDTH;
         let y = position.y as f32 * TILE_WIDTH;
 
@@ -63,3 +69,27 @@ pub fn draw_text(canvas: &mut Canvas, text_string: &str, x: f32, y: f32) {
     canvas.draw(&text, Vec2::new(x, y));
 }
 // ANCHOR_END: draw_text
+
+
+// ANCHOR: get_image
+pub fn get_image(context: &mut Context, renderable: &Renderable, delta: Duration) -> Image {
+    let path_index = match renderable.kind() {
+        RenderableKind::Static => {
+            // We only have one image, so we just return that
+            0
+        }
+        RenderableKind::Animated => {
+            // If we have multiple, we want to select the right one based on the delta time.
+            // First we get the delta in milliseconds, we % by 1000 to get the milliseconds
+            // only and finally we divide by 250 to get a number between 0 and 4. If it's 4
+            // we technically are on the next iteration of the loop (or on 0), but we will let
+            // the renderable handle this logic of wrapping frames.
+            ((delta.as_millis() % 1000) / 250) as usize
+        }
+    };
+
+    let image_path = renderable.path(path_index);
+
+    Image::from_path(context, image_path).unwrap()
+}
+// ANCHOR_END: get_image

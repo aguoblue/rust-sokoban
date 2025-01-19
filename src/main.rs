@@ -39,6 +39,13 @@ impl event::EventHandler<ggez::GameError> for Game {
             systems::gameplay::run_gameplay_state(&self.world);
         }
 
+        // Get and update time resource
+        {
+            let mut query = self.world.query::<&mut crate::components::Time>();
+            let time = query.iter().next().unwrap().1;
+            time.delta += context.time.delta();
+        }
+
         // Run events processing
         {
             systems::events::run_process_events(&mut self.world, &mut *context);
@@ -70,6 +77,7 @@ pub fn main() -> GameResult {
 
     entities::create_gameplay(&mut world);
     entities::create_event_queue(&mut world);
+    entities::create_time(&mut world);
     entities::create_audio_store(&mut world);
     map::initialize_level(&mut world, &mut context);
 
