@@ -9,3 +9,8 @@ run传进可变的context，可变的game
 
 移交了game的所有权，game可变，game实现了event::EventHandler<ggez::GameError>
 
+------------------------
+
+初始化，组件的生成，绑定到world
+world作为game的属性
+EventHandler渲染
