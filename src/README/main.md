@@ -17,3 +17,6 @@ EventHandler渲染
 
 ------------------------
 不可变借用(&Position, &Renderable)
+
+------------------------
+可变借用(&mut Position, &Player)， 修改状态

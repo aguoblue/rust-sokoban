@@ -5,6 +5,7 @@
 use ggez::{
     conf, event,
     graphics::{self, DrawParam, Image},
+    input::keyboard::KeyCode,
     Context, GameResult,
 };
 use glam::Vec2;
@@ -48,7 +49,6 @@ struct Game {
 // ANCHOR: init
 // Initialize the level// Initialize the level
 pub fn initialize_level(world: &mut World) {
-    // ANCHOR: map
     const MAP: &str = "
     N N W W W W W W
     W W W . . . . W
@@ -60,7 +60,6 @@ pub fn initialize_level(world: &mut World) {
     W . . . . . . W
     W W W W W W W W
     ";
-    // ANCHOR_END: map
 
     load_map(world, MAP.to_string());
 }
@@ -111,7 +110,12 @@ pub fn load_map(world: &mut World, map_string: String) {
 
 // ANCHOR: handler
 impl event::EventHandler<ggez::GameError> for Game {
-    fn update(&mut self, _context: &mut Context) -> GameResult {
+    fn update(&mut self, context: &mut Context) -> GameResult {
+        // Run input system
+        {
+            run_input(&self.world, context);
+        }
+
         Ok(())
     }
 
@@ -178,8 +182,8 @@ pub fn create_player(world: &mut World, position: Position) -> Entity {
 
 // ANCHOR: rendering_system
 fn run_rendering(world: &World, context: &mut Context) {
-    // Clearing the screen (this gives us the background colour)
-        let mut canvas =
+    // Create a canvas to draw on
+    let mut canvas =
         graphics::Canvas::from_frame(context, graphics::Color::from([0.95, 0.95, 0.95, 1.0]));
 
     // Get all the renderables with their positions and sort by the position z
@@ -206,6 +210,63 @@ fn run_rendering(world: &World, context: &mut Context) {
     canvas.finish(context).expect("expected to present");
 }
 // ANCHOR_END: rendering_system
+
+// ANCHOR: input_system_print
+#[allow(dead_code)]
+fn run_input_print(_world: &World, context: &mut Context) {
+    if context.keyboard.is_key_pressed(KeyCode::Up) {
+        println!("UP");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Down) {
+        println!("DOWN");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Left) {
+        println!("LEFT");
+    }
+    if context.keyboard.is_key_pressed(KeyCode::Right) {
+        println!("RIGHT");
+    }
+}
+// ANCHOR_END: input_system_print
+
+// ANCHOR: input_system_duplicate
+#[allow(dead_code)]
+fn input_system_duplicate(world: &World, context: &mut Context) {
+    for (_, (position, _player)) in world.query::<(&mut Position, &Player)>().iter() {
+        if context.keyboard.is_key_pressed(KeyCode::Up) {
+            position.y -= 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Down) {
+            position.y += 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Left) {
+            position.x -= 1;
+        }
+        if context.keyboard.is_key_pressed(KeyCode::Right) {
+            position.x += 1;
+        }
+    }
+}
+// ANCHOR_END: input_system_duplicate
+
+// ANCHOR: input_system
+fn run_input(world: &World, context: &mut Context) {
+    for (_, (position, _player)) in world.query::<(&mut Position, &Player)>().iter() {
+        if context.keyboard.is_key_just_pressed(KeyCode::Up) {
+            position.y -= 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Down) {
+            position.y += 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Left) {
+            position.x -= 1;
+        }
+        if context.keyboard.is_key_just_pressed(KeyCode::Right) {
+            position.x += 1;
+        }
+    }
+}
+// ANCHOR_END: input_system
 
 // ANCHOR: main
 pub fn main() -> GameResult {
