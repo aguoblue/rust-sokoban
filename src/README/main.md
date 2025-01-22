@@ -14,3 +14,6 @@ run传进可变的context，可变的game
 初始化，组件的生成，绑定到world
 world作为game的属性
 EventHandler渲染
+
+------------------------
+不可变借用(&Position, &Renderable)
