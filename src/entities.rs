@@ -11,6 +11,7 @@ pub fn create_wall(world: &mut World, position: Position) -> Entity {
         Immovable {},
     ))
 }
+
 pub fn create_floor(world: &mut World, position: Position) -> Entity {
     world.spawn((
         Position { z: 5, ..position },
@@ -50,4 +51,8 @@ pub fn create_player(world: &mut World, position: Position) -> Entity {
         Player {},
         Movable {},
     ))
+}
+
+pub fn create_gameplay(world: &mut World) -> Entity {
+    world.spawn((Gameplay::default(),))
 }

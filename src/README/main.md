@@ -29,3 +29,8 @@ gpt解释mov 是已拷贝的数据，与 world 的借用无关。collect() 消�
 
 ------------------------
 模块化
+
+------------------------
+新增状态
+Default 是 Rust 标准库中的一个特性，它定义了一个方法 default，用于生成某个类型的默认值。
+:<&mut Gameplay> 可变Gameplay，修改state 以及 count
